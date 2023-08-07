@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: MaterialApp(
+        title: 'TaskHub',
         theme: CustomTheme.appTheme(),
         darkTheme: CustomTheme.appTheme(isDark: true),
         home: const TasksScreen(),

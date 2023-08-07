@@ -20,7 +20,7 @@ class DatabaseService {
       _dbPath!,
       onCreate: (db, version) async {
         await db.execute(
-            'CREATE TABLE $_dbTable (id INTEGER PRIMARY KEY, name TEXT)');
+            'CREATE TABLE $_dbTable (id INTEGER PRIMARY KEY, name TEXT, description TEXT)');
       },
       version: 1,
     );

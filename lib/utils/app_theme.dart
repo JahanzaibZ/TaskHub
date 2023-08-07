@@ -23,8 +23,13 @@ class CustomTheme {
               ? _lightColorScheme().onPrimary
               : _lightColorScheme().onPrimary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(15),
           ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );

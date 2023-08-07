@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/task.dart';
 import '../viewmodels/tasks_provider.dart';
+import './widgets/add_task_button.dart';
+import './widgets/task_list_tile.dart';
 
-class TasksScreen extends ConsumerWidget {
+class TasksScreen extends ConsumerStatefulWidget {
   const TasksScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final textField = TextEditingController();
+  ConsumerState<TasksScreen> createState() => _TasksScreenState();
+}
+
+class _TasksScreenState extends ConsumerState<TasksScreen> {
+  @override
+  void initState() {
+    Future.delayed(
+      Duration.zero,
+      () => ref.read(tasksProvider.notifier).fetchTasks(),
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = ref.watch(loadingTasks);
     final tasks = ref.watch(tasksProvider);
-    final tasksNotifier = ref.read(tasksProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: Image.asset(
@@ -20,58 +34,39 @@ class TasksScreen extends ConsumerWidget {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            debugPrint(
-                'Task ID: ${tasks[index].id}, Task Name: ${tasks[index].name}');
-            return ListTile(
-              title: Text(tasks[index].name),
-              trailing: IconButton(
-                onPressed: () => tasksNotifier.removeTask(tasks[index]),
-                icon: const Icon(Icons.delete),
-              ),
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showModalBottomSheet<void>(
-          context: context,
-          builder: (context) {
-            {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.maxFinite,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: const Text('Enter Task:'),
-                    ),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : tasks.isEmpty
+              ? const Center(
+                  child: Text('You have no tasks, Create some!'),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            'Your Tasks:',
+                            textScaleFactor: 1.5,
+                          ),
                         ),
-                      ),
-                      controller: textField,
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: tasks.length,
+                            itemBuilder: (ctx, index) {
+                              return TaskListTile(userTask: tasks[index]);
+                            }),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            tasksNotifier.addTask(Task(name: textField.text)),
-                        child: const Text('Save'),
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              );
-            }
-          },
-        ),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: const AddTaskButton(),
     );
   }
 }
