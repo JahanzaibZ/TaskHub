@@ -62,6 +62,7 @@ class AddTaskButton extends ConsumerWidget {
                       child: const Text('Name:'),
                     ),
                     TextFormField(
+                      textCapitalization: TextCapitalization.words,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Task name cannot be empty';
@@ -80,6 +81,7 @@ class AddTaskButton extends ConsumerWidget {
                       child: const Text('Description (optional):'),
                     ),
                     TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
                       maxLines: 3,
                       onSaved: (newValue) =>
                           userTask = userTask.copyWith(description: newValue),
